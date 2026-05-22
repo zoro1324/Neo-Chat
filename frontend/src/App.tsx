@@ -4,20 +4,63 @@ function App() {
   const [message, setMessage] = useState<string>("");
   const [reply, setReply] = useState<string>("");
   const API_URL = import.meta.env.VITE_API_URL;
+  const debugPrefix = "[Neo-Chat][frontend]";
+
   const sendMessage = async () => {
-    const response = await fetch(`${API_URL}/send`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: message,
-      }),
+    if (!API_URL) {
+      const errorMessage = "VITE_API_URL is not configured.";
+      console.error(debugPrefix, errorMessage);
+      setReply(errorMessage);
+      return;
+    }
+
+    const trimmedMessage = message.trim();
+
+    if (!trimmedMessage) {
+      const errorMessage = "Enter a message before sending.";
+      console.warn(debugPrefix, errorMessage);
+      setReply(errorMessage);
+      return;
+    }
+
+    const requestUrl = `${API_URL}/send`;
+
+    console.info(debugPrefix, "Sending message", {
+      requestUrl,
+      messageLength: trimmedMessage.length,
     });
 
-    const data = await response.json();
+    try {
+      const response = await fetch(requestUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: trimmedMessage,
+        }),
+      });
 
-    setReply(data.reply);
+      console.info(debugPrefix, "Received response", {
+        status: response.status,
+        ok: response.ok,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Request failed with status ${response.status}: ${errorText}`,
+        );
+      }
+
+      const data = (await response.json()) as { reply?: string };
+
+      console.debug(debugPrefix, "Response payload", data);
+      setReply(data.reply ?? "No reply returned from server.");
+    } catch (error) {
+      console.error(debugPrefix, "Failed to send message", error);
+      setReply("Unable to reach the server. Check the console and backend logs.");
+    }
   };
 
   return (
