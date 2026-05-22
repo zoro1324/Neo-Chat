@@ -28,6 +28,11 @@ app.add_middleware(
 class Message(BaseModel):
     message: str
 
+
+@app.post("")
+async def root():
+    return {"message": "Welcome to the Neo-Chat API"}
+
 @app.post("/send")
 async def send_message(data: Message):
     logger.info("Received /send request with message length %s", len(data.message))
