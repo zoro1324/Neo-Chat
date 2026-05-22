@@ -20,3 +20,5 @@ site/
 .idea/
 .vscode/
 *.log
+
+.env

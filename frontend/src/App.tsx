@@ -3,9 +3,9 @@ import { useState } from "react";
 function App() {
   const [message, setMessage] = useState<string>("");
   const [reply, setReply] = useState<string>("");
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const sendMessage = async () => {
-    const response = await fetch("http://127.0.0.1:8000/send", {
+    const response = await fetch(`${API_URL}/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
