@@ -18,7 +18,7 @@ export const ChatInput = ({
   onChange,
   onSend,
   disabled,
-  placeholder = "Message ChatGPT",
+  placeholder = "Message Neo-Chat",
   layoutId,
   isLanding = false,
 }: ChatInputProps) => {

@@ -2,8 +2,6 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   SquarePen,
   MessageSquare,
-  LayoutGrid,
-  FolderClosed,
   Settings,
   ChevronDown,
   X,
@@ -17,8 +15,6 @@ const SidebarContent = ({ onNewChat }: SidebarContentProps) => {
   const navItems = [
     { label: "New chat", icon: SquarePen, active: true, onClick: onNewChat },
     { label: "Chats", icon: MessageSquare },
-    { label: "Explore GPTs", icon: LayoutGrid },
-    { label: "Library", icon: FolderClosed },
   ];
 
   return (

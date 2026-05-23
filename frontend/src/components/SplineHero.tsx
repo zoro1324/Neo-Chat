@@ -63,7 +63,7 @@ export const SplineHero = memo(({ scene }: SplineHeroProps) => {
 
   return (
     <motion.div
-      className="relative mx-auto h-[380px] w-[min(480px,85vw)] rounded-[40px] overflow-hidden"
+      className="relative mx-auto h-[540px] w-[min(680px,95vw)] rounded-[40px] overflow-hidden"
       animate={
         reduceMotion
           ? { y: 0 }

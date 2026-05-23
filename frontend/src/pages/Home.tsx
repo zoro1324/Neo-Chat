@@ -67,12 +67,12 @@ export default function Home() {
                 <Menu className="h-5 w-5" />
               </button>
 
-              {/* ChatGPT Selector */}
+              {/* Neo-Chat Selector */}
               <button
                 type="button"
                 className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-base font-semibold text-[#9b9ca4] transition hover:bg-white/5 hover:text-white"
               >
-                <span>ChatGPT</span>
+                <span>Neo-Chat</span>
                 <ChevronDown className="h-4 w-4 shrink-0 text-[#9b9ca4]" />
               </button>
             </div>
