@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown, SquarePen } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { AnimatedLayout } from "../components/AnimatedLayout";
@@ -11,7 +11,7 @@ const SPLINE_SCENE =
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { input, setInput, messages, sendMessage, isSending, hasStarted } =
+  const { input, setInput, messages, sendMessage, isSending, hasStarted, reset } =
     useChat({ apiUrl: import.meta.env.VITE_API_URL });
 
   const backgroundMotion = reduceMotion
@@ -25,38 +25,67 @@ export default function Home() {
     void sendMessage();
   };
 
+  const handleNewChat = () => {
+    reset();
+    setSidebarOpen(false);
+  };
+
   return (
-    <div className="relative min-h-dvh overflow-hidden">
+    <div className="relative min-h-dvh overflow-hidden bg-[#0d0e12] font-body text-white">
+      {/* Sleek, premium background gradient with center glow for the landing page */}
       <motion.div
-        className="pointer-events-none absolute inset-0 opacity-80"
+        className="pointer-events-none absolute inset-0 opacity-90"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 20% 10%, rgba(56, 189, 248, 0.18), transparent 45%), radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.2), transparent 40%), linear-gradient(160deg, #050816, #0b1020)",
+            "radial-gradient(circle at 50% 45%, rgba(124, 58, 237, 0.08), transparent 50%), linear-gradient(180deg, #0d0e12 0%, #111218 100%)",
           backgroundSize: "200% 200%",
         }}
         animate={backgroundMotion}
         transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-35" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-72 w-130 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.35),transparent_70%)] blur-3xl" />
 
       <div className="relative z-10 flex min-h-dvh">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        {/* Sidebar */}
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onNewChat={handleNewChat}
+        />
 
+        {/* Main Content Area */}
         <div className="flex min-h-dvh flex-1 flex-col">
-          <header className="flex items-center justify-between px-4 pt-5 lg:hidden">
+          {/* Header (ChatGPT dropdown & New Chat icon) */}
+          <header className="flex items-center justify-between px-5 py-4">
+            <div className="flex items-center gap-3">
+              {/* Mobile hamburger menu */}
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="rounded-full p-2 text-[#9b9ca4] hover:bg-white/5 hover:text-white lg:hidden"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
+              {/* ChatGPT Selector */}
+              <button
+                type="button"
+                className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-base font-semibold text-[#9b9ca4] transition hover:bg-white/5 hover:text-white"
+              >
+                <span>ChatGPT</span>
+                <ChevronDown className="h-4 w-4 shrink-0 text-[#9b9ca4]" />
+              </button>
+            </div>
+
+            {/* New Chat Edit Icon Button */}
             <button
               type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="glass-panel rounded-full p-2 text-white"
-              aria-label="Open menu"
+              onClick={handleNewChat}
+              className="rounded-lg p-2 text-[#9b9ca4] transition hover:bg-[#1c1d25] hover:text-white"
+              aria-label="New chat"
             >
-              <Menu className="h-4 w-4" />
+              <SquarePen className="h-5 w-5" />
             </button>
-            <span className="font-display text-xs uppercase tracking-[0.35em] text-muted">
-              ChatGPT
-            </span>
-            <div className="h-8 w-8" />
           </header>
 
           <AnimatedLayout

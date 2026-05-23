@@ -1,4 +1,4 @@
-import { Send } from "lucide-react";
+import { Paperclip, ArrowUp } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import type { KeyboardEvent } from "react";
@@ -10,6 +10,7 @@ type ChatInputProps = {
   disabled?: boolean;
   placeholder?: string;
   layoutId?: string;
+  isLanding?: boolean;
 };
 
 export const ChatInput = ({
@@ -19,6 +20,7 @@ export const ChatInput = ({
   disabled,
   placeholder = "Message ChatGPT",
   layoutId,
+  isLanding = false,
 }: ChatInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -34,24 +36,41 @@ export const ChatInput = ({
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      if (disabled) {
+      if (disabled || (!isLanding && value.trim().length === 0)) {
         return;
       }
       onSend();
     }
   };
 
+  const hasText = value.trim().length > 0;
+
+  // Send button styling based on state (mockup compatibility)
+  const isSendActive = isLanding || hasText;
+  const sendButtonClass = isSendActive
+    ? "bg-[#5850ec] hover:bg-[#6366f1] text-white shadow-[0_0_15px_rgba(88,80,236,0.35)] cursor-pointer"
+    : "bg-[#20212a] text-[#4e4f56] cursor-not-allowed";
+
   return (
     <motion.div
       layout
       layoutId={layoutId}
-      className="relative glass-input rounded-3xl px-4 py-3 glow-ring transition focus-within:shadow-[0_0_0_1px_rgba(56,189,248,0.55),0_0_30px_rgba(56,189,248,0.35)]"
+      className="relative rounded-[28px] border border-white/10 bg-[#161820]/90 px-4 py-2.5 transition-all duration-250 focus-within:border-white/20 focus-within:bg-[#161820] focus-within:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_10px_30px_rgba(0,0,0,0.4)]"
     >
-      <div className="absolute inset-0 rounded-3xl border border-white/5" />
-      <div className="relative flex items-end gap-3">
+      <div className="relative flex items-center gap-3">
+        {/* Paperclip attachment icon */}
+        <button
+          type="button"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#9b9ca4] transition hover:bg-white/5 hover:text-white cursor-pointer"
+          aria-label="Attach file"
+        >
+          <Paperclip className="h-5 w-5" />
+        </button>
+
+        {/* Text area */}
         <textarea
           ref={textareaRef}
-          className="max-h-32 w-full resize-none bg-transparent text-sm text-white outline-none placeholder:text-muted"
+          className="max-h-32 w-full resize-none bg-transparent py-2.5 text-[15px] leading-relaxed text-white outline-none placeholder:text-[#5c5e66]"
           rows={1}
           value={value}
           onChange={(event) => onChange(event.target.value)}
@@ -59,14 +78,16 @@ export const ChatInput = ({
           placeholder={placeholder}
           disabled={disabled}
         />
+
+        {/* Up arrow send button */}
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${sendButtonClass}`}
           onClick={onSend}
-          disabled={disabled || value.trim().length === 0}
+          disabled={disabled || (!isLanding && !hasText)}
           aria-label="Send message"
         >
-          <Send className="h-4 w-4" />
+          <ArrowUp className="h-[18px] w-[18px] stroke-[2.5]" />
         </button>
       </div>
     </motion.div>

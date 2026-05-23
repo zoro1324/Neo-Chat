@@ -93,6 +93,12 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
     }
   }, [apiUrl, hasStarted, input, isSending]);
 
+  const reset = useCallback(() => {
+    setMessages([]);
+    setHasStarted(false);
+    setInput("");
+  }, []);
+
   const canSend = useMemo(
     () => input.trim().length > 0 && !isSending,
     [input, isSending],
@@ -106,5 +112,6 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
     canSend,
     hasStarted,
     sendMessage,
+    reset,
   };
 };

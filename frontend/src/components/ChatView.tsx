@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
+import type { Variants } from "motion/react";
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "../hooks/useChat";
 import { ChatInput } from "./ChatInput";
@@ -22,7 +23,7 @@ export const ChatView = ({
   const endRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
 
-  const listVariants = {
+  const listVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -32,7 +33,7 @@ export const ChatView = ({
     },
   };
 
-  const itemVariants = reduceMotion
+  const itemVariants: Variants = reduceMotion
     ? {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { duration: 0.2 } },
@@ -64,9 +65,9 @@ export const ChatView = ({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className="flex-1 overflow-y-auto px-4">
         <motion.div
-          className="mx-auto flex w-full max-w-3xl flex-col gap-4 pb-10 pt-6"
+          className="mx-auto flex w-full max-w-2xl flex-col gap-4 pb-10 pt-6"
           variants={listVariants}
           initial="hidden"
           animate="show"
@@ -84,7 +85,7 @@ export const ChatView = ({
 
       <motion.div
         layoutId="chat-input"
-        className="mx-auto w-full max-w-3xl px-4 pb-6 pt-4"
+        className="mx-auto w-full max-w-2xl px-4 pb-6 pt-4"
         transition={{ type: "spring", stiffness: 120, damping: 18 }}
       >
         <ChatInput
@@ -92,6 +93,7 @@ export const ChatView = ({
           onChange={onInputChange}
           onSend={onSend}
           disabled={isSending}
+          isLanding={false}
         />
       </motion.div>
     </motion.section>

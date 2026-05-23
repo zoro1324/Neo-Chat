@@ -23,38 +23,40 @@ export const LandingView = ({
     <motion.section
       layout
       layoutId="main-panel"
-      className="relative flex flex-1 flex-col items-center justify-center px-6 pb-28 pt-10"
+      className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-end px-6 pb-6 pt-4"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
+      {/* Tightly-packed Robot + Pill group placed directly above the input */}
       <motion.div
-        className="flex flex-col items-center gap-6"
+        className="mb-6 flex flex-col items-center gap-4"
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
       >
         <motion.div
           layoutId="spline-hero"
-          className="drop-shadow-[0_40px_80px_rgba(8,16,40,0.5)]"
           exit={{ opacity: 0, scale: 0.7, y: -30 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
         >
           <SplineHero scene={scene} />
         </motion.div>
+        
         <motion.div
-          className="glass-panel rounded-full px-5 py-2 text-xs text-muted"
-          animate={reduceMotion ? { y: 0 } : { y: [0, -6, 0] }}
+          className="rounded-full border border-white/5 bg-[#14151c]/60 px-5 py-2 text-xs font-medium text-[#8c8e98] shadow-[0_4px_20px_rgba(0,0,0,0.3)] backdrop-blur-md"
+          animate={reduceMotion ? { y: 0 } : { y: [0, -4, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
         >
           Press on the canvas to focus and interact
         </motion.div>
       </motion.div>
 
+      {/* Input box directly beneath the robot group */}
       <motion.div
         layoutId="chat-input"
-        className="absolute bottom-8 left-1/2 w-full max-w-2xl -translate-x-1/2 px-6"
+        className="w-full px-2"
         transition={{ type: "spring", stiffness: 120, damping: 18 }}
       >
         <ChatInput
@@ -62,6 +64,7 @@ export const LandingView = ({
           onChange={onInputChange}
           onSend={onSend}
           disabled={isSending}
+          isLanding={true}
         />
       </motion.div>
     </motion.section>
