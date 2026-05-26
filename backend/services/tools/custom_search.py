@@ -3,7 +3,7 @@
 from langchain.tools import tool 
 import requests
 import os
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 @tool
 def custom_image_search(query: str) -> list[str]:
@@ -36,7 +36,7 @@ def custom_image_search(query: str) -> list[str]:
     # Fallback to DuckDuckGo search if Google fails or keys are missing
     try:
         results = DDGS().images(
-            keywords=query,
+            query,
             region="wt-wt",
             safesearch="moderate",
             max_results=5,
