@@ -11,6 +11,7 @@ type AnimatedLayoutProps = {
   onInputChange: (value: string) => void;
   onSend: () => void;
   isSending: boolean;
+  onFileUpload: (file: File) => void;
 };
 
 export const AnimatedLayout = ({
@@ -21,11 +22,12 @@ export const AnimatedLayout = ({
   onInputChange,
   onSend,
   isSending,
+  onFileUpload,
 }: AnimatedLayoutProps) => (
   <LayoutGroup>
     <motion.div
       layout
-      className="flex flex-1 flex-col px-2 pb-4 pt-6 lg:px-10"
+      className="flex flex-1 flex-col overflow-hidden px-2 pb-4 pt-6 lg:px-10"
       transition={{ type: "spring", stiffness: 90, damping: 18, mass: 0.9 }}
     >
       <AnimatePresence mode="sync">
@@ -37,6 +39,7 @@ export const AnimatedLayout = ({
             onInputChange={onInputChange}
             onSend={onSend}
             isSending={isSending}
+            onFileUpload={onFileUpload}
           />
         ) : (
           <LandingView
@@ -46,6 +49,7 @@ export const AnimatedLayout = ({
             onInputChange={onInputChange}
             onSend={onSend}
             isSending={isSending}
+            onFileUpload={onFileUpload}
           />
         )}
       </AnimatePresence>
