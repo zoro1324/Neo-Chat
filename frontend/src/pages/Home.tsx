@@ -11,7 +11,7 @@ const SPLINE_SCENE =
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { input, setInput, messages, sendMessage, isSending, hasStarted, reset } =
+  const { input, setInput, messages, sendMessage, isSending, hasStarted, reset, handleFileUpload } =
     useChat({ apiUrl: import.meta.env.VITE_API_URL });
 
   const backgroundMotion = reduceMotion
@@ -31,7 +31,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-[#0d0e12] font-body text-white">
+    <div className="relative h-dvh overflow-hidden bg-[#0d0e12] font-body text-white">
       {/* Sleek, premium background gradient with center glow for the landing page */}
       <motion.div
         className="pointer-events-none absolute inset-0 opacity-90"
@@ -44,7 +44,7 @@ export default function Home() {
         transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       />
 
-      <div className="relative z-10 flex min-h-dvh">
+      <div className="relative z-10 flex h-dvh">
         {/* Sidebar */}
         <Sidebar
           isOpen={sidebarOpen}
@@ -53,9 +53,9 @@ export default function Home() {
         />
 
         {/* Main Content Area */}
-        <div className="flex min-h-dvh flex-1 flex-col">
+        <div className="flex h-dvh flex-1 flex-col overflow-hidden">
           {/* Header (ChatGPT dropdown & New Chat icon) */}
-          <header className="flex items-center justify-between px-5 py-4">
+          <header className="flex items-center justify-between px-5 py-4 shrink-0">
             <div className="flex items-center gap-3">
               {/* Mobile hamburger menu */}
               <button
@@ -96,6 +96,7 @@ export default function Home() {
             onInputChange={(value) => setInput(value)}
             onSend={handleSend}
             isSending={isSending}
+            onFileUpload={handleFileUpload}
           />
         </div>
       </div>
