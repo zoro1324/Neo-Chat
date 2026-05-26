@@ -8,6 +8,7 @@ type LandingViewProps = {
   onInputChange: (value: string) => void;
   onSend: () => void;
   isSending: boolean;
+  onFileUpload: (file: File) => void;
 };
 
 export const LandingView = ({
@@ -16,6 +17,7 @@ export const LandingView = ({
   onInputChange,
   onSend,
   isSending,
+  onFileUpload,
 }: LandingViewProps) => {
 
   return (
@@ -56,6 +58,7 @@ export const LandingView = ({
           onSend={onSend}
           disabled={isSending}
           isLanding={true}
+          onFileUpload={onFileUpload}
         />
       </motion.div>
     </motion.section>

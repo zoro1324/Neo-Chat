@@ -11,6 +11,7 @@ type ChatViewProps = {
   onInputChange: (value: string) => void;
   onSend: () => void;
   isSending: boolean;
+  onFileUpload: (file: File) => void;
 };
 
 export const ChatView = ({
@@ -19,6 +20,7 @@ export const ChatView = ({
   onInputChange,
   onSend,
   isSending,
+  onFileUpload,
 }: ChatViewProps) => {
   const endRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
@@ -59,7 +61,7 @@ export const ChatView = ({
     <motion.section
       layout
       layoutId="main-panel"
-      className="relative flex flex-1 flex-col"
+      className="relative flex flex-1 flex-col overflow-hidden"
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -94,6 +96,7 @@ export const ChatView = ({
           onSend={onSend}
           disabled={isSending}
           isLanding={false}
+          onFileUpload={onFileUpload}
         />
       </motion.div>
     </motion.section>
