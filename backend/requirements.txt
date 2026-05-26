@@ -41,3 +41,8 @@ urllib3==2.7.0
 uvicorn==0.47.0
 watchfiles==1.2.0
 websockets==16.0
+faiss-cpu>=1.9.0
+sentence-transformers>=3.3.1
+unstructured>=0.16.1
+pypdf>=5.1.0
+opencv-python>=4.10.0
