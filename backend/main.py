@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from services.chat import process_chat_message
 
 load_dotenv()
 
@@ -37,7 +38,11 @@ async def root():
 async def send_message(data: Message):
     logger.info("Received /send request with message length %s", len(data.message))
 
-    reply = f"The message '{data.message}' was received by the server"
+    try:
+        reply = await process_chat_message(data.message)
+    except Exception as e:
+        logger.error("Error processing message: %s", str(e))
+        reply = "I'm sorry, but I encountered an error while trying to process your request."
 
     logger.debug("Reply payload generated: %s", reply)
 
