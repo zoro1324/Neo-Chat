@@ -3,6 +3,7 @@ import type { Variants } from "motion/react";
 import { useState } from "react";
 import type { ChatMessage } from "../hooks/useChat";
 import { Copy, ThumbsUp, ThumbsDown, Volume2, Check } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 type MessageBubbleProps = {
   message: ChatMessage;
@@ -77,7 +78,7 @@ export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
         variants={variants}
         className="flex w-full justify-end py-2"
       >
-        <div className="max-w-[75%] rounded-[22px] bg-[#1c1d25] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm">
+        <div className="max-w-[75%] rounded-[22px] bg-[#1c1d25] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm whitespace-pre-wrap">
           {message.content}
         </div>
       </motion.div>
@@ -98,8 +99,16 @@ export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
       {/* Message Bubble + Actions Column */}
       <div className="flex flex-col max-w-[80%]">
         {/* Assistant Bubble */}
-        <div className="rounded-[22px] bg-[#181922] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm">
-          {message.content}
+        <div className="rounded-[22px] bg-[#181922] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm prose prose-invert max-w-none">
+          <ReactMarkdown
+            components={{
+              img: ({ node, ...props }) => (
+                <img {...props} className="max-w-full rounded-lg my-2 border border-white/10" loading="lazy" />
+              )
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
         </div>
 
         {/* Action icons below the bubble */}
