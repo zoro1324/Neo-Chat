@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import {
   SquarePen,
   MessageSquare,
@@ -9,19 +10,29 @@ import {
 
 type SidebarContentProps = {
   onNewChat?: () => void;
+  username: string | null;
+  sessions: { session_id: string; title: string }[];
+  activeSessionId: string;
+  onSessionSelect: (sid: string) => void;
+  onLogout: () => void;
+  onTriggerLogin: () => void;
 };
 
-const SidebarContent = ({ onNewChat }: SidebarContentProps) => {
-  const navItems = [
-    { label: "New chat", icon: SquarePen, active: true, onClick: onNewChat },
-    { label: "Chats", icon: MessageSquare },
-  ];
+const SidebarContent = ({
+  onNewChat,
+  username,
+  sessions,
+  activeSessionId,
+  onSessionSelect,
+  onLogout,
+  onTriggerLogin,
+}: SidebarContentProps) => {
+  const [showLogoutDropdown, setShowLogoutDropdown] = useState(false);
 
   return (
-    <div className="flex h-full flex-col bg-[#090a0f] px-3 pb-6 pt-5">
+    <div className="flex h-full flex-col bg-[#090a0f] px-3 pb-6 pt-5 font-sans">
       {/* ChatGPT logo in top-left */}
-      <div className="mb-6 px-3">
-        {/* ChatGPT Logo */}
+      <div className="mb-6 px-3 select-none">
         <svg
           viewBox="0 0 24 24"
           fill="currentColor"
@@ -32,27 +43,67 @@ const SidebarContent = ({ onNewChat }: SidebarContentProps) => {
         </svg>
       </div>
 
-      {/* Navigation items */}
-      <div className="flex-1 space-y-1.5">
-        {navItems.map(({ label, icon: Icon, active, onClick }) => (
-          <button
-            key={label}
-            onClick={onClick}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-              active
-                ? "bg-[#1c1d25] text-white cursor-pointer"
-                : "text-[#9b9ca4] hover:bg-[#1c1d25]/50 hover:text-white cursor-pointer"
-            }`}
-            type="button"
-          >
-            <Icon className="h-[18px] w-[18px] shrink-0" />
-            <span>{label}</span>
-          </button>
-        ))}
+      {/* Navigation and Recents List */}
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 select-none">
+        <button
+          onClick={onNewChat}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold bg-[#1c1d25] text-white hover:bg-[#1c1d25]/80 transition cursor-pointer"
+          type="button"
+        >
+          <SquarePen className="h-[18px] w-[18px] shrink-0" />
+          <span>New chat</span>
+        </button>
+
+        {/* Recents Category */}
+        <div className="pt-2">
+          <div className="px-3 mb-2 flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#4e4f56]">Recents</span>
+            <MessageSquare className="h-3 w-3 text-[#4e4f56]" />
+          </div>
+
+          <div className="space-y-1 max-h-[calc(100vh-320px)] overflow-y-auto pr-1">
+            {username ? (
+              sessions.length > 0 ? (
+                sessions.map((session) => {
+                  const isActive = session.session_id === activeSessionId;
+                  return (
+                    <button
+                      key={session.session_id}
+                      onClick={() => onSessionSelect(session.session_id)}
+                      className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition text-left cursor-pointer ${
+                        isActive
+                          ? "bg-[#161820] text-white border border-white/5"
+                          : "text-[#9b9ca4] hover:bg-[#1c1d25]/50 hover:text-white"
+                      }`}
+                      type="button"
+                    >
+                      <MessageSquare className={`h-[16px] w-[16px] shrink-0 ${isActive ? "text-[#818cf8]" : "text-[#4e4f56]"}`} />
+                      <span className="truncate flex-1 pr-1">{session.title}</span>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="px-3 py-4 text-xs text-[#4e4f56] italic">
+                  No conversations yet.
+                </div>
+              )
+            ) : (
+              <div className="rounded-xl bg-white/3 border border-white/5 px-3.5 py-4 text-xs text-[#9b9ca4] space-y-2 select-none leading-relaxed">
+                <p>Log in to save and sync your conversation history.</p>
+                <button
+                  onClick={onTriggerLogin}
+                  className="w-full text-center text-xs font-semibold text-[#818cf8] hover:text-white transition cursor-pointer"
+                >
+                  Log In Now
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Bottom profile and settings */}
-      <div className="mt-auto space-y-4 px-1">
+      {/* Bottom Profile and Settings */}
+      <div className="relative mt-auto space-y-4 px-1 select-none">
         <button
           className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-sm font-medium text-[#9b9ca4] transition hover:bg-[#1c1d25]/50 hover:text-white cursor-pointer"
           type="button"
@@ -61,15 +112,46 @@ const SidebarContent = ({ onNewChat }: SidebarContentProps) => {
           <span>Settings</span>
         </button>
 
+        {showLogoutDropdown && (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-14 left-0 w-full p-1.5 bg-[#12131a] border border-white/10 rounded-2xl shadow-2xl z-50 flex flex-col gap-1"
+          >
+            <div className="px-3 py-2 text-xs text-[#676870] border-b border-white/5 truncate">
+              {username ? `Signed in as ${username}` : "Not signed in"}
+            </div>
+            <button
+              onClick={() => {
+                setShowLogoutDropdown(false);
+                onLogout();
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 transition cursor-pointer text-left"
+              type="button"
+            >
+              Log out
+            </button>
+          </motion.div>
+        )}
+
         <button
+          onClick={() => {
+            if (username) {
+              setShowLogoutDropdown(!showLogoutDropdown);
+            } else {
+              onTriggerLogin();
+            }
+          }}
           className="flex w-full items-center justify-between rounded-xl px-2 py-2 transition hover:bg-[#1c1d25]/50 cursor-pointer"
           type="button"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6366f1] text-xs font-semibold text-white">
-              A
+              {username ? username.charAt(0).toUpperCase() : "G"}
             </div>
-            <span className="text-sm font-medium text-white">Alex</span>
+            <span className="text-sm font-medium text-white max-w-[120px] truncate">
+              {username || "Guest User"}
+            </span>
           </div>
           <ChevronDown className="h-4 w-4 text-[#9b9ca4]" />
         </button>
@@ -82,9 +164,25 @@ type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
   onNewChat?: () => void;
+  username: string | null;
+  sessions: { session_id: string; title: string }[];
+  activeSessionId: string;
+  onSessionSelect: (sid: string) => void;
+  onLogout: () => void;
+  onTriggerLogin: () => void;
 };
 
-export const Sidebar = ({ isOpen, onClose, onNewChat }: SidebarProps) => (
+export const Sidebar = ({
+  isOpen,
+  onClose,
+  onNewChat,
+  username,
+  sessions,
+  activeSessionId,
+  onSessionSelect,
+  onLogout,
+  onTriggerLogin,
+}: SidebarProps) => (
   <>
     <motion.aside
       className="hidden h-dvh w-64 flex-col border-r border-white/5 bg-[#090a0f] lg:flex"
@@ -92,7 +190,15 @@ export const Sidebar = ({ isOpen, onClose, onNewChat }: SidebarProps) => (
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <SidebarContent onNewChat={onNewChat} />
+      <SidebarContent
+        onNewChat={onNewChat}
+        username={username}
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onSessionSelect={onSessionSelect}
+        onLogout={onLogout}
+        onTriggerLogin={onTriggerLogin}
+      />
     </motion.aside>
 
     <AnimatePresence>
@@ -124,10 +230,19 @@ export const Sidebar = ({ isOpen, onClose, onNewChat }: SidebarProps) => (
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <SidebarContent onNewChat={onNewChat} />
+            <SidebarContent
+              onNewChat={onNewChat}
+              username={username}
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              onSessionSelect={onSessionSelect}
+              onLogout={onLogout}
+              onTriggerLogin={onTriggerLogin}
+            />
           </motion.aside>
         </motion.div>
       ) : null}
     </AnimatePresence>
   </>
 );
+
