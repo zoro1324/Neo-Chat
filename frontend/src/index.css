@@ -104,3 +104,139 @@
 		mask-image: radial-gradient(circle at 40% 20%, rgba(0, 0, 0, 0.7), transparent 60%);
 	}
 }
+
+/* Premium Prose Typography Styles for Message Bubbles */
+.prose {
+	color: #e2e8f0;
+	font-size: 15px;
+	line-height: 1.75;
+}
+
+.prose p {
+	margin-top: 0;
+	margin-bottom: 0.9rem;
+}
+
+.prose p:last-child {
+	margin-bottom: 0;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+	color: #ffffff;
+	font-family: var(--font-display);
+	font-weight: 700;
+	margin-top: 1.6rem;
+	margin-bottom: 0.6rem;
+	line-height: 1.4;
+}
+
+.prose h1 {
+	font-size: 1.5rem;
+}
+
+.prose h2 {
+	font-size: 1.3rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	padding-bottom: 0.4rem;
+}
+
+.prose h3 {
+	font-size: 1.15rem;
+}
+
+/* Lists Styling */
+.prose ul {
+	list-style-type: disc;
+	padding-left: 1.4rem;
+	margin-bottom: 0.9rem;
+}
+
+.prose ol {
+	list-style-type: decimal;
+	padding-left: 1.4rem;
+	margin-bottom: 0.9rem;
+}
+
+.prose li {
+	margin-bottom: 0.4rem;
+	line-height: 1.7;
+}
+
+.prose li::marker {
+	color: #6366f1;
+	font-weight: bold;
+}
+
+/* Formatted Links */
+.prose a {
+	color: #818cf8;
+	text-decoration: none;
+	border-bottom: 1px dashed rgba(129, 140, 248, 0.4);
+	transition: all 0.2s ease;
+}
+
+.prose a:hover {
+	color: #a5b4fc;
+	border-bottom-style: solid;
+}
+
+/* Bold & Strong Highlights */
+.prose strong,
+.prose b {
+	color: #ffffff;
+	font-weight: 600;
+}
+
+/* Inline Code Elements */
+.prose code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.88em;
+	background-color: rgba(255, 255, 255, 0.09);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 0.18rem 0.38rem;
+	border-radius: 6px;
+	color: #22d3ee;
+}
+
+/* Quotes */
+.prose blockquote {
+	border-left: 4px solid #6366f1;
+	padding-left: 1.1rem;
+	margin: 1.2rem 0;
+	font-style: italic;
+	color: #94a3b8;
+	background-color: rgba(255, 255, 255, 0.02);
+	border-radius: 0 8px 8px 0;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+/* Tables Formatting */
+.prose table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.4rem 0;
+	font-size: 0.9rem;
+}
+
+.prose th,
+.prose td {
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 0.65rem 0.85rem;
+	text-align: left;
+}
+
+.prose th {
+	background-color: rgba(255, 255, 255, 0.05);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.prose tr:nth-child(even) {
+	background-color: rgba(255, 255, 255, 0.02);
+}

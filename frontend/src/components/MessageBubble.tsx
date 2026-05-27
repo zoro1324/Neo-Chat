@@ -60,6 +60,45 @@ const RobotAvatar = () => (
   </svg>
 );
 
+const CodeBlock = ({ code, language }: { code: string; language: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="my-4 overflow-hidden rounded-xl border border-white/10 bg-[#07080c] shadow-lg">
+      <div className="flex items-center justify-between bg-[#12131a] px-4 py-2 text-xs text-[#9b9ca4] border-b border-white/5 select-none font-sans">
+        <span className="font-mono uppercase font-semibold text-[#818cf8]">{language || "code"}</span>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 rounded px-2 py-0.5 transition hover:bg-white/5 hover:text-white cursor-pointer active:scale-95"
+        >
+          {copied ? (
+            <>
+              <Check className="h-3.5 w-3.5 text-green-400" />
+              <span className="text-green-400 font-medium">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="h-3.5 w-3.5" />
+              <span>Copy code</span>
+            </>
+          )}
+        </button>
+      </div>
+      <div className="overflow-x-auto p-4 text-[13.5px] leading-relaxed text-[#e5e7eb] font-mono">
+        <pre className="m-0 bg-transparent border-none p-0">
+          <code className="p-0 bg-transparent border-none text-inherit">{code}</code>
+        </pre>
+      </div>
+    </div>
+  );
+};
+
 export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
@@ -78,7 +117,7 @@ export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
         variants={variants}
         className="flex w-full justify-end py-2"
       >
-        <div className="max-w-[75%] rounded-[22px] bg-[#1c1d25] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm whitespace-pre-wrap">
+        <div className="max-w-[75%] rounded-[22px] bg-[#1c1d25] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm whitespace-pre-wrap font-sans">
           {message.content}
         </div>
       </motion.div>
@@ -89,7 +128,7 @@ export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
     <motion.div
       layout
       variants={variants}
-      className="flex w-full gap-4.5 py-3.5"
+      className="flex w-full gap-4.5 py-3.5 font-sans"
     >
       {/* Robot Avatar Column */}
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/15 bg-[#14151c] shadow-sm">
@@ -99,17 +138,34 @@ export const MessageBubble = ({ message, variants }: MessageBubbleProps) => {
       {/* Message Bubble + Actions Column */}
       <div className="flex flex-col max-w-[80%]">
         {/* Assistant Bubble */}
-        <div className="rounded-[22px] bg-[#181922] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm prose prose-invert max-w-none">
+        <div className="rounded-[22px] bg-[#181922] border border-white/5 px-5 py-3 text-[15px] leading-relaxed text-white shadow-sm prose max-w-none">
           <ReactMarkdown
             components={{
               img: ({ node, ...props }) => (
                 <img {...props} className="max-w-full rounded-lg my-2 border border-white/10" loading="lazy" />
-              )
+              ),
+              code({ node, className, children, ...props }) {
+                const match = /language-(\w+)/.exec(className || "");
+                const lang = match ? match[1] : "";
+                const codeText = String(children).replace(/\n$/, "");
+                const isBlock = match || codeText.includes("\n");
+                
+                if (isBlock) {
+                  return <CodeBlock code={codeText} language={lang} />;
+                }
+                
+                return (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              }
             }}
           >
             {message.content}
           </ReactMarkdown>
         </div>
+
 
         {/* Action icons below the bubble */}
         <div className="mt-2 flex items-center gap-3 px-1 text-[#676870]">
