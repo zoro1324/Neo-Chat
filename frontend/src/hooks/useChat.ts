@@ -19,13 +19,13 @@ const createId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
-const requestReply = async (message: string, sessionId: string, apiUrl?: string) => {
+const requestReply = async (message: string, sessionId: string, apiUrl?: string, username?: string | null) => {
   if (!apiUrl) return "VITE_API_URL is not configured.";
 
   const response = await fetch(`${apiUrl}/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, session_id: sessionId }),
+    body: JSON.stringify({ message, session_id: sessionId, username: username || undefined }),
   });
 
   if (!response.ok) {
@@ -59,6 +59,11 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [sessionId, setSessionId] = useState<string>(createId());
   
+  // Auth state
+  const [username, setUsername] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<{ session_id: string; title: string }[]>([]);
+  
   const fetchHistory = useCallback(async (sid: string) => {
     if (!apiUrl) return;
     try {
@@ -68,22 +73,75 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
         if (data && data.length > 0) {
           setMessages(data);
           setHasStarted(true);
+        } else {
+          setMessages([]);
+          setHasStarted(false);
         }
       }
     } catch(e) {
       console.error(e);
     }
   }, [apiUrl]);
+
+  const fetchUserSessions = useCallback(async (user: string) => {
+    if (!apiUrl) return;
+    try {
+      const res = await fetch(`${apiUrl}/sessions/${user}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSessions(data);
+      }
+    } catch (e) {
+      console.error("Error fetching user sessions:", e);
+    }
+  }, [apiUrl]);
   
   useEffect(() => {
-    // Optionally save sessionId to localStorage so it persists reloads
-    const saved = localStorage.getItem("neo_chat_session");
-    if(saved) {
-      setSessionId(saved);
-      fetchHistory(saved);
+    // Restore authentication
+    const savedUser = localStorage.getItem("neo_chat_username");
+    const savedEmail = localStorage.getItem("neo_chat_email");
+    if (savedUser) {
+      setUsername(savedUser);
+      setUserEmail(savedEmail);
+      void fetchUserSessions(savedUser);
+    }
+
+    // Restore active session
+    const savedSession = localStorage.getItem("neo_chat_session");
+    if (savedSession) {
+      setSessionId(savedSession);
+      void fetchHistory(savedSession);
     } else {
       localStorage.setItem("neo_chat_session", sessionId);
     }
+  }, [fetchHistory, fetchUserSessions]);
+
+  const loadSession = useCallback(async (sid: string) => {
+    setSessionId(sid);
+    localStorage.setItem("neo_chat_session", sid);
+    await fetchHistory(sid);
+  }, [fetchHistory]);
+
+  const handleLogin = useCallback((user: string, email: string) => {
+    setUsername(user);
+    setUserEmail(email);
+    localStorage.setItem("neo_chat_username", user);
+    localStorage.setItem("neo_chat_email", email);
+    void fetchUserSessions(user);
+  }, [fetchUserSessions]);
+
+  const handleLogout = useCallback(() => {
+    setUsername(null);
+    setUserEmail(null);
+    setSessions([]);
+    setMessages([]);
+    setHasStarted(false);
+    localStorage.removeItem("neo_chat_username");
+    localStorage.removeItem("neo_chat_email");
+    
+    const newId = createId();
+    setSessionId(newId);
+    localStorage.setItem("neo_chat_session", newId);
   }, []);
 
   const sendMessage = useCallback(async () => {
@@ -102,13 +160,18 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
     setIsSending(true);
 
     try {
-      const reply = await requestReply(trimmed, sessionId, apiUrl);
+      const reply = await requestReply(trimmed, sessionId, apiUrl, username);
       const assistantMessage: ChatMessage = {
         id: createId(),
         role: "assistant",
         content: reply,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Refresh user sessions list
+      if (username) {
+        void fetchUserSessions(username);
+      }
     } catch (error) {
       const fallbackMessage: ChatMessage = {
         id: createId(),
@@ -119,7 +182,7 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
     } finally {
       setIsSending(false);
     }
-  }, [apiUrl, hasStarted, input, isSending, sessionId]);
+  }, [apiUrl, input, isSending, sessionId, username, fetchUserSessions]);
   
   const handleFileUpload = async (file: File) => {
      try {
@@ -153,7 +216,16 @@ export const useChat = ({ apiUrl }: UseChatOptions = {}) => {
     hasStarted,
     sendMessage,
     reset,
-    handleFileUpload
+    handleFileUpload,
+    username,
+    userEmail,
+    sessions,
+    loadSession,
+    handleLogin,
+    handleLogout,
+    sessionId
   };
 };
+
+
 

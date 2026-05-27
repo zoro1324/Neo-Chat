@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { AnimatedLayout } from "../components/AnimatedLayout";
 import { Sidebar } from "../components/Sidebar";
+import { AuthModal } from "../components/AuthModal";
 import { useChat } from "../hooks/useChat";
 
 const SPLINE_SCENE =
@@ -10,9 +11,24 @@ const SPLINE_SCENE =
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { input, setInput, messages, sendMessage, isSending, hasStarted, reset, handleFileUpload } =
-    useChat({ apiUrl: import.meta.env.VITE_API_URL });
+  const {
+    input,
+    setInput,
+    messages,
+    sendMessage,
+    isSending,
+    hasStarted,
+    reset,
+    handleFileUpload,
+    username,
+    sessions,
+    loadSession,
+    handleLogin,
+    handleLogout,
+    sessionId,
+  } = useChat({ apiUrl: import.meta.env.VITE_API_URL });
 
   const backgroundMotion = reduceMotion
     ? {}
@@ -50,6 +66,15 @@ export default function Home() {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           onNewChat={handleNewChat}
+          username={username}
+          sessions={sessions}
+          activeSessionId={sessionId}
+          onSessionSelect={(sid) => {
+            void loadSession(sid);
+            setSidebarOpen(false);
+          }}
+          onLogout={handleLogout}
+          onTriggerLogin={() => setAuthModalOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -100,6 +125,15 @@ export default function Home() {
           />
         </div>
       </div>
+
+      {/* Glassmorphic Auth Modal overlay */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onLoginSuccess={handleLogin}
+        apiUrl={import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}
+      />
     </div>
   );
 }
+
